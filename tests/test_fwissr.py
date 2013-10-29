@@ -110,7 +110,7 @@ def create_tmp_mongo_col(name, conf):
 def delete_tmp_mongo_db():
     pass
 
-class testFwissr(unittest.TestCase):
+class TestFwissr(unittest.TestCase):
 
     def setUp(self):
         create_tmp_conf_file("pouet.yml", {"salut mec": "ca va"})
