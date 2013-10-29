@@ -12,11 +12,12 @@ import unittest
 
 from fwissr import fwissr
 
-import pymongo
+from pymongo import MongoClient
 import os
 import json
 import yaml
 import shutil
+import locale
 
 def setup_global_conf():
     # create additional file sources
@@ -47,9 +48,9 @@ def setup_global_conf():
     fwissr_conf = {
         'fwissr_sources': [
             { 'filepath': tmp_conf_file(first) },
-            { 'filepath': tmp_conf_file(second), 'top_level': true },
-            { 'mongodb': tmp_mongo_db_uri, 'collection': 'roque.fort', 'top_level': true },
-            { 'mongodb': tmp_mongo_db_uri, 'collection': 'cam.en.bert' },
+            { 'filepath': tmp_conf_file(second), 'top_level': True },
+            { 'mongodb': mongo_connection_url(tmp_mongo_db()), 'collection': 'roque.fort', 'top_level': True },
+            { 'mongodb': mongo_connection_url(tmp_mongo_db()), 'collection': 'cam.en.bert' },
         ],
         'fwissr_refresh_period': 5,
         'foo':'bar',
@@ -83,7 +84,7 @@ def create_tmp_conf_file(filename, conf):
     f.close()
 
 def delete_tmp_conf_file():
-    if os.path.abspath(tmp_conf_dir()) == os.path.abspath(Fwissr.DEFAULT_MAIN_CONF_PATH):
+    if os.path.abspath(tmp_conf_dir()) == os.path.abspath(fwissr.DEFAULT_MAIN_CONF_PATH):
         raise Exception("Hey, don't delete all legal conf files !", tmp_conf_dir())
     shutil.rmtree(tmp_conf_dir(), True)
 
@@ -92,34 +93,56 @@ def set_tmp_conf(conf_dir = tmp_conf_dir, user_conf_dir = ""):
     Fwissr.user_conf_dir = user_conf_dir
 
 
+def env_or(env_name, or_value):
+    """Returns the env variable value or or_value if unset"""
+    if env_name in os.environ:
+        return os.environ[env_name]
+    else:
+        return or_value
+
 def tmp_mongo_hostname():
-    return "localhost"
+    return env_or("MONGO_HOSTNAME", "localhost")
 
 def tmp_mongo_port():
-    return 27017
+    return env_or("MONGO_PORT", 27017)
+    if "MONGO_PORT" in os.environ:
+        return locale.atoi(os.environ["MONGO_PORT"])
+    else:
+        return 27017
 
 def tmp_mongo_db():
     return "fwissr_spec"
 
-def tmp_mongo_db_uri():
-    return "mongodb://%s:%s/%s" % (tmp_mongo_hostname(), tmp_mongo_port(), tmp_mongo_db())
+def mongo_connection_url(db = ""):
+    return "mongodb://%s:%s/%s" % (tmp_mongo_hostname(),
+        tmp_mongo_port(),
+        db)
+
+def mongo_connection():
+    return MongoClient(mongo_connection_url())
 
 def create_tmp_mongo_col(name, conf):
-    pass
+    col = mongo_connection()[tmp_mongo_db()].create_collection(name)
+    for key, val in conf.iteritems():
+        col.insert({'_id': key, 'value' : val})
 
 def delete_tmp_mongo_db():
-    pass
+    client = mongo_connection()
+    client.drop_database(tmp_mongo_db())
+
 
 class TestFwissr(unittest.TestCase):
 
     def setUp(self):
-        create_tmp_conf_file("pouet.yml", {"salut mec": "ca va"})
+        delete_tmp_mongo_db()
+        setup_global_conf()
 
     def test_something(self):
         pass
 
     def tearDown(self):
-        pass
+        delete_tmp_conf_file()
+        delete_tmp_mongo_db()
 
 if __name__ == '__main__':
     unittest.main()
