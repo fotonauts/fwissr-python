@@ -9,6 +9,9 @@ import yaml
 import shutil
 import locale
 
+import sys
+print sys.modules
+
 def setup_global_conf():
     # create additional file sources
     first = 'mouarf.lol.json'

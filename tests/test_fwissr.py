@@ -9,17 +9,15 @@ Tests for `fwissr` module.
 """
 
 import unittest
-from test_helpers import *
+
 import fwissr
 import Fwissr
 
+from test_helpers import *
+
 class TestFwissr(unittest.TestCase):
-
-    @classmethod
-    def setupClass(cls):
-        fwissr.main_conf_path = tmp_conf_dir()
-
     def setUp(self):
+        Fwissr.main_conf_path = tmp_conf_dir()
         delete_tmp_conf_file()
         delete_tmp_mongo_db()
 

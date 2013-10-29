@@ -2,7 +2,20 @@
 # -*- coding: utf-8 -*-
 
 import os
+import json
+import yaml
+from registry import Registry
+import source
+from source.source_factory import SourceFactory
 
+def merge_conf(to_hash, other_hash, path = []):
+    "merges other_hash into to_hash"
+    for key in other_hash:
+        if key in to_hash and isinstance(to_hash[key], dict) and isinstance(other_hash[key], dict):
+            merge_conf(to_hash[key], other_hash[key], path + [str(key)])
+        else:
+            to_hash[key] = other_hash[key]
+    return to_hash
 
 class FwissrModule(object):
     # main conf file
@@ -15,12 +28,17 @@ class FwissrModule(object):
     def __init__(self):
         self._main_conf_path = self.DEFAULT_MAIN_CONF_PATH
         self._main_user_conf_path = os.path.join(self.find_home(), self.DEFAULT_MAIN_USER_CONF_DIR)
+        self._global_registry = None
+        self._main_conf = None
+        self._main_conf_file = None
+        self._main_user_conf_file = None
 
     def main_conf_path():
         doc = "The main_conf_path property."
         def fget(self):
             return self._main_conf_path
         def fset(self, value):
+            print "Setting main conf path to %s" % value
             self._main_conf_path = value
         return locals()
     main_conf_path = property(**main_conf_path())
@@ -38,7 +56,7 @@ class FwissrModule(object):
     def find_home(self):
         for v in ('HOME', 'USERPROFILE'):
             if v in os.environ:
-                return v
+                return os.environ[v]
 
         if "HOMEDRIVE" in os.environ and "HOMEPATH" in os.environ:
             return "%s:%s" % (os.environ["HOMEDRIVE"], os.environ["HOMEPATH"])
@@ -55,7 +73,7 @@ class FwissrModule(object):
         pass
 
 
-    def global_registry():
+    def global_registry(self):
         """Global Registry
 
 
@@ -73,11 +91,89 @@ class FwissrModule(object):
         }
         access global registry with Fwissr['/foo/bar']
         """
-        pass
+        if self._global_registry is None:
+            if 'fwissr_refresh_period' in self.main_conf:
+                result = Registry(refresh_period = self.main_conf['fwissr_refresh_period'])
+            else:
+                result = Registry()
+
+            if not os.path.exists(self.main_conf_file) and not os.path.exists(self.main_user_conf_file):
+                raise Exception("No fwissr conf file found", self.main_conf_file, self.main_user_conf_file)
+
+            if os.path.exists(self.main_conf_file):
+                result.add_source(SourceFactory.from_settings({'filepath': self.main_conf_file}))
+
+            if os.path.exists(self.main_user_conf_file):
+                result.add_source(SourceFactory.from_settings({'filepath': self.main_user_conf_file}))
+
+
+            if self.main_conf['fwissr_sources'] is nil:
+                for source in self.main_conf['fwissr_sources']:
+                    result.add_source(SourceFactory.from_settings(source))
+
+            self._global_registry = result
+        return self._global_registry
+
+
+    def main_conf():
+        doc = "The main_conf property."
+        def fget(self):
+            if self._main_conf is None:
+                result = {}
+                if os.path.exists(self.main_conf_file):
+                    result = merge_conf(result, self.parse_conf_file(self.main_conf_file))
+
+                if os.path.exists(self.main_user_conf_file):
+                    result = merge_conf(result, self.parse_conf_file(self.main_user_conf_file))
+
+                print "Loading main conf with"
+                print result
+                self._main_conf = result
+            return self._main_conf
+        return locals()
+    main_conf = property(**main_conf())
+
+
+    def main_conf_file():
+        doc = "The main_conf_file property."
+        def fget(self):
+            if self._main_conf_file is None:
+                self._main_conf_file = os.path.join(self.main_conf_path, self.MAIN_CONF_FILE)
+
+            return self._main_conf_file
+        return locals()
+    main_conf_file = property(**main_conf_file())
+
+    def main_user_conf_file():
+        doc = "The main_user_conf_file property."
+        def fget(self):
+            if self._main_user_conf_file is None:
+                self._main_user_conf_file = os.path.join(self.main_user_conf_path, self.MAIN_CONF_FILE)
+
+            return self._main_user_conf_file
+        return locals()
+    main_user_conf_file = property(**main_user_conf_file())
+
 
     def get(self, key):
-        return self[key]
+        return self.global_registry().get(key)
 
     def __getitem__(self, key):
-        return "plop"
+        return self.global_registry().get(key)
 
+
+    # utils
+    def parse_conf_file(self, conf_file_path):
+
+        ext = os.path.splitext(conf_file_path)[1]
+        if ext == ".json":
+            return json.load(open(conf_file_path))
+        elif ext == ".yaml" or ext == ".yml":
+            return yaml.load(open(conf_file_path))
+        else:
+            raise Exception("Unsupported conf file kind", conf_file_path)
+
+
+
+
+Fwissr = FwissrModule()
