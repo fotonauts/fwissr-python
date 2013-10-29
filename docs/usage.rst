@@ -2,6 +2,6 @@
 Usage
 ========
 
-To use Fwissr-python in a project::
+To use fwissr in a project::
 
 	import fwissr-python

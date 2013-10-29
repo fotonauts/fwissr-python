@@ -18,17 +18,17 @@ readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
-    name='fwissr-python',
+    name='fwissr',
     version='0.1.0',
-    description='fwissr-python is a registry configuration tool, compatible with fwissr',
+    description='fwissr is a registry configuration tool, compatible with fwissr',
     long_description=readme + '\n\n' + history,
     author='Pierre Baillet',
     author_email='pierre@baillet.name',
     url='https://github.com/fotonauts/fwissr-python',
     packages=[
-        'fwissr-python',
+        'fwissr',
     ],
-    package_dir={'fwissr-python': 'fwissr-python'},
+    package_dir={'fwissr': 'fwissr'},
     include_package_data=True,
     install_requires=[
         'pymongo>=2.5.2',
@@ -36,7 +36,7 @@ setup(
     ],
     license="MIT",
     zip_safe=False,
-    keywords='fwissr-python',
+    keywords='fwissr',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
