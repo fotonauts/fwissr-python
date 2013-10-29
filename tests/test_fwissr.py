@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
-test_fwissr-python
+test_fwissr
 ----------------------------------
 
-Tests for `fwissr-python` module.
+Tests for `fwissr` module.
 """
 
 import unittest
@@ -110,7 +110,7 @@ def create_tmp_mongo_col(name, conf):
 def delete_tmp_mongo_db():
     pass
 
-class TestFwissr-python(unittest.TestCase):
+class testFwissr(unittest.TestCase):
 
     def setUp(self):
         create_tmp_conf_file("pouet.yml", {"salut mec": "ca va"})
