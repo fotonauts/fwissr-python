@@ -1,7 +1,9 @@
 from threading import RLock, Thread
 
-import fwissr
+from conf import parse_conf_file, merge_conf
 import UserDict
+import time
+import atexit
 
 class ReadOnlyDict(UserDict.IterableUserDict):
     def __setitem__(self, key, item): raise TypeError
@@ -21,12 +23,22 @@ class ReadOnlyDict(UserDict.IterableUserDict):
             raise TypeError
 
 class ReloadThread(Thread):
-    def __init__(registry):
-        Thread.__init__()
-        self.registry = registry
-    def run():
-        sleep(self.registry.refresh_period)
-        self.registry.load
+    def __init__(self, registry):
+        super(ReloadThread, self).__init__()
+        self._registry = registry
+#        print "My registry is %s (and I am %s " % (registry, self)
+    def run(self):
+#        print "My Registry is %s" % self._registry
+        count = 0
+        while True:
+            time.sleep(1)
+#            print "%s waking up (%d/%d)" % (self, count, self._registry.refresh_period)
+            if count == self._registry.refresh_period:
+                self._registry.load()
+#                print "%s: reloaded %s" % ( self, self._registry)
+#                print "%s %s" % (self, self._registry.dump())
+                count = 0
+            count += 1
 
 
 class Registry:
@@ -51,9 +63,9 @@ class Registry:
     def add_source(self, source):
         with self.semaphore:
             self.sources.append(source)
-            fwissr.merge_conf(self._registry, source.get_conf())
+            merge_conf(self._registry, source.get_conf())
 
-        self.ensure_refresh_thread
+        self.ensure_refresh_thread()
 
     def reload(self):
         self.reset()
@@ -81,10 +93,10 @@ class Registry:
     def keys(self):
         result = []
         self._keys(result, [], self._registry)
-        result.sort
+        return sorted(result)
 
     def dump(self):
-        self._registry
+        return self._registry
 
     def refres_thread(self):
         pass
@@ -96,16 +108,24 @@ class Registry:
 
     def ensure_refresh_thread(self):
         if(self.refresh_period > 0) and self.have_refreshable_source() \
-            and (self.refresh_thread is not None and not self.refresh_thread.is_alive()):
+            and (self.refresh_thread is None or not self.refresh_thread.is_alive()):
             # re-start refresh thread
             self.refresh_thread = ReloadThread(self)
+            self.refresh_thread.daemon = True
+            self.refresh_thread.start()
 
     def reset(self):
+        with self.semaphore:
+            self._registry = {}
+            [source.reset() for source in self.sources]
+
+    def load(self):
         with self.semaphore:
             self._registry = {}
             for source in self.sources:
                 source_conf = source.get_conf()
                 merge_conf(self._registry, source_conf)
+        # print "Reloaded with content: %s" % self
 
     def registry():
         doc = "The registry property."
@@ -115,12 +135,12 @@ class Registry:
         return locals()
     registry = property(**registry())
 
-    def _keys(self, result, key_ary, dict):
-        for (key, value) in dict.items():
-            key_ary.add(key)
-            result = result + "/%s" % (key_ary.join("/"))
+    def _keys(self, result, key_ary, dct):
+        for (key, value) in dct.items():
+            key_ary.append(key)
+            result.append("/%s" % ("/".join(key_ary)))
             if isinstance(value, dict):
-                self._keys(result, key_ary, value) 
+                self._keys(result, key_ary, value)
             key_ary.pop()
 
 

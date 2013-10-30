@@ -73,7 +73,7 @@ def create_tmp_conf_file(filename, conf):
         raise Exception("Unsupported conf file type", filename)
     f.close()
 
-def delete_tmp_conf_file():
+def delete_tmp_conf_files():
     if os.path.abspath(tmp_conf_dir()) == os.path.abspath(Fwissr.DEFAULT_MAIN_CONF_PATH):
         raise Exception("Hey, don't delete all legal conf files !", tmp_conf_dir())
     shutil.rmtree(tmp_conf_dir(), True)

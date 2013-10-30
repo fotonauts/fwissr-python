@@ -28,7 +28,6 @@ class FwissrModule(object):
         def fget(self):
             return self._main_conf_path
         def fset(self, value):
-            print "Setting main conf path to %s" % value
             self._main_conf_path = value
         return locals()
     main_conf_path = property(**main_conf_path())

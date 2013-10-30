@@ -23,6 +23,8 @@ class TestFwissr(unittest.TestCase):
     def test_manager_global_registry(self):
         setup_global_conf()
         self.assertEqual(Fwissr['/foo'], 'bar')
+        self.assertEqual(Fwissr['/bar'], 'baz')
+        self.assertEqual( Fwissr['/cam'], { 'en': { 'bert': { 'pim': { 'pam': [ 'pom', 'pum' ] } } } })
 
 
 if __name__ == '__main__':
