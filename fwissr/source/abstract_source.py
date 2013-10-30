@@ -1,8 +1,8 @@
 class AbstractSource(object):
 
-    def __init__(self):
+    def __init__(self, options = {}):
         self.reset()
-        self._options = {}
+        self._options = options
 
     def reset(self):
         self._conf = None

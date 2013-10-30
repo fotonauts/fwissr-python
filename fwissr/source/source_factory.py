@@ -1,5 +1,5 @@
 from file import File
-import mongodb
+from mongodb import Mongodb
 
 class SourceFactory(object):
     @classmethod

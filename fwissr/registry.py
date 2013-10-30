@@ -35,7 +35,7 @@ class Registry:
     def __init__(self, refresh_period = DEFAULT_REFRESH_PERIOD):
         self._refresh_period = refresh_period
 
-        self._registry  = ReadOnlyDict({})
+        self._registry  = {}
         self.sources = []
 
         self.semaphore = RLock()
@@ -59,7 +59,7 @@ class Registry:
         self.reset()
         self.load()
 
-    def get(key):
+    def get(self, key):
         key_ary = key.split("/")
 
         if key_ary[0] == "":
@@ -102,7 +102,7 @@ class Registry:
 
     def reset(self):
         with self.semaphore:
-            self._registry = ReadOnlyDict({})
+            self._registry = {}
             for source in self.sources:
                 source_conf = source.get_conf()
                 merge_conf(self._registry, source_conf)

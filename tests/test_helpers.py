@@ -1,6 +1,4 @@
 
-import fwissr
-import Fwissr
 
 from pymongo import MongoClient
 import os
@@ -9,8 +7,7 @@ import yaml
 import shutil
 import locale
 
-import sys
-print sys.modules
+from fwissr.fwissr import Fwissr
 
 def setup_global_conf():
     # create additional file sources

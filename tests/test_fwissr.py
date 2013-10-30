@@ -10,8 +10,7 @@ Tests for `fwissr` module.
 
 import unittest
 
-import fwissr
-import Fwissr
+from fwissr.fwissr import Fwissr
 
 from test_helpers import *
 

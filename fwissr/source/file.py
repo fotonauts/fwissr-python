@@ -4,7 +4,10 @@ import copy
 import glob
 import os
 
+from ..conf import parse_conf_file, merge_conf
+
 class File(AbstractSource):
+    TOP_LEVEL_CONF_FILES = [ 'fwissr' ]
     @classmethod
     def from_path(self, path, options = {}):
         if path is None or path == '':
@@ -17,7 +20,7 @@ class File(AbstractSource):
         return self.from_path(settings['filepath'], mine)
 
     def __init__(self, path, options = {}):
-        super(File,self).__init__()
+        super(File,self).__init__(options)
         if not os.path.exists(path):
             raise Exception("Missing file", path)
         self._path = path
@@ -35,5 +38,18 @@ class File(AbstractSource):
                 self.merge_conf_file(result, conf)
 
         return result
+
+    def merge_conf_file(self, result, conf_file_path):
+        conf = parse_conf_file(conf_file_path)
+        conf_file_name = os.path.splitext(os.path.basename(conf_file_path))[0]
+        result_part = result
+
+        if not conf_file_name in File.TOP_LEVEL_CONF_FILES and not "top_level" in self._options:
+            for key_part in conf_file_name.split('.'):
+                if not key_part in result_part:
+                    result_part[key_part] = {}
+                result_part = result_part[key_part]
+
+        return merge_conf(result_part, conf)
 
 

@@ -2,20 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import os
-import json
-import yaml
 from registry import Registry
 import source
 from source.source_factory import SourceFactory
-
-def merge_conf(to_hash, other_hash, path = []):
-    "merges other_hash into to_hash"
-    for key in other_hash:
-        if key in to_hash and isinstance(to_hash[key], dict) and isinstance(other_hash[key], dict):
-            merge_conf(to_hash[key], other_hash[key], path + [str(key)])
-        else:
-            to_hash[key] = other_hash[key]
-    return to_hash
+from conf import parse_conf_file, merge_conf
 
 class FwissrModule(object):
     # main conf file
@@ -107,7 +97,7 @@ class FwissrModule(object):
                 result.add_source(SourceFactory.from_settings({'filepath': self.main_user_conf_file}))
 
 
-            if self.main_conf['fwissr_sources'] is nil:
+            if 'fwissr_sources' in self.main_conf:
                 for source in self.main_conf['fwissr_sources']:
                     result.add_source(SourceFactory.from_settings(source))
 
@@ -121,13 +111,11 @@ class FwissrModule(object):
             if self._main_conf is None:
                 result = {}
                 if os.path.exists(self.main_conf_file):
-                    result = merge_conf(result, self.parse_conf_file(self.main_conf_file))
+                    result = merge_conf(result, parse_conf_file(self.main_conf_file))
 
                 if os.path.exists(self.main_user_conf_file):
-                    result = merge_conf(result, self.parse_conf_file(self.main_user_conf_file))
+                    result = merge_conf(result, parse_conf_file(self.main_user_conf_file))
 
-                print "Loading main conf with"
-                print result
                 self._main_conf = result
             return self._main_conf
         return locals()
@@ -160,20 +148,5 @@ class FwissrModule(object):
 
     def __getitem__(self, key):
         return self.global_registry().get(key)
-
-
-    # utils
-    def parse_conf_file(self, conf_file_path):
-
-        ext = os.path.splitext(conf_file_path)[1]
-        if ext == ".json":
-            return json.load(open(conf_file_path))
-        elif ext == ".yaml" or ext == ".yml":
-            return yaml.load(open(conf_file_path))
-        else:
-            raise Exception("Unsupported conf file kind", conf_file_path)
-
-
-
 
 Fwissr = FwissrModule()
