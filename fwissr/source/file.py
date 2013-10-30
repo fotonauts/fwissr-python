@@ -25,6 +25,17 @@ class File(AbstractSource):
             raise Exception("Missing file", path)
         self._path = path
 
+    def path():
+        doc = "The path property."
+        def fget(self):
+            return self._path
+        def fset(self, value):
+            self._path = value
+        def fdel(self):
+            del self._path
+        return locals()
+    path = property(**path())
+
     def fetch_conf(self):
         result = {}
 
