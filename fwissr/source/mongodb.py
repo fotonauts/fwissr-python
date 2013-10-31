@@ -1,48 +1,52 @@
 # mongodb.py
 from abstract_source import AbstractSource
 import copy
-import glob
-import os
 
-from ..conf import parse_conf_file, merge_conf
+from ..conf import merge_conf
 import urlparse
 
 from pymongo import MongoClient
 
 connections = {}
 
+
 class Mongodb(AbstractSource):
     @classmethod
     def from_settings(self, settings):
         if not 'mongodb' in settings or not 'collection' in settings or \
-            settings['mongodb'] == '' or settings['collection'] =='':
-            raise Exception("Erroneous mongodb settings, needs a collection and mongodb setting", settings)
+                settings['mongodb'] == '' or settings['collection'] == '':
+            raise Exception(
+                "Erroneous mongodb settings, "
+                "needs a collection and mongodb setting",
+                settings)
 
         cx_uri = urlparse.urlsplit(settings["mongodb"])
         db_name = cx_uri.path[1:]
-        if db_name == "" :
-            raise Exception("Erroneous mongodb settings, missing db_name", settings)
+        if db_name == "":
+            raise Exception(
+                "Erroneous mongodb settings, "
+                "missing db_name", settings)
 
-        cx_uri = urlparse.urlunsplit((cx_uri.scheme, cx_uri.netloc, "/", cx_uri.query, cx_uri.fragment))
+        cx_uri = urlparse.urlunsplit(
+            (cx_uri.scheme, cx_uri.netloc, "/", cx_uri.query, cx_uri.fragment))
         options = copy.deepcopy(settings)
         del options['mongodb']
         del options['collection']
 
-
-        return Mongodb(self.connection_for_uri(cx_uri), db_name, settings['collection'], options)
-
+        return Mongodb(
+            self.connection_for_uri(cx_uri),
+            db_name, settings['collection'], options)
 
     @classmethod
-    def connection_for_uri(self,uri):
+    def connection_for_uri(self, uri):
         if not uri in connections:
             connections[uri] = MongoClient(uri)
         return connections[uri]
 
-
-    TOP_LEVEL_COLLECTIONS = [ 'fwissr' ]
+    TOP_LEVEL_COLLECTIONS = ['fwissr']
 
     def __init__(self, conn, db_name, collection_name, options):
-        super(Mongodb,self).__init__(options)
+        super(Mongodb, self).__init__(options)
 
         self._conn = conn
         self._db_name = db_name
@@ -52,10 +56,13 @@ class Mongodb(AbstractSource):
 
     def db_name():
         doc = "The db_name property."
+
         def fget(self):
             return self._db_name
+
         def fset(self, value):
             self._db_name = value
+
         def fdel(self):
             del self._db_name
         return locals()
@@ -63,10 +70,13 @@ class Mongodb(AbstractSource):
 
     def collection_name():
         doc = "The collection_name property."
+
         def fget(self):
             return self._collection_name
+
         def fset(self, value):
             self._collection_name = value
+
         def fdel(self):
             del self._collection_name
         return locals()
@@ -76,7 +86,9 @@ class Mongodb(AbstractSource):
         result = {}
         result_part = result
 
-        if not self._collection_name in Mongodb.TOP_LEVEL_COLLECTIONS and (not 'top_level' in self._options or not self._options["top_level"]):
+        if not self._collection_name in Mongodb.TOP_LEVEL_COLLECTIONS and (
+                not 'top_level' in self._options
+                or not self._options["top_level"]):
             for key_part in self._collection_name.split("."):
                 if not key_part in result_part:
                     result_part[key_part] = {}

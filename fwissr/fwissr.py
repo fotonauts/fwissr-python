@@ -3,21 +3,24 @@
 
 import os
 from registry import Registry
-import source
 from source.source_factory import SourceFactory
 from conf import parse_conf_file, merge_conf
+
 
 class FwissrModule(object):
     # main conf file
     MAIN_CONF_FILE = "fwissr.json"
     # default path where main conf file is located
     DEFAULT_MAIN_CONF_PATH = "/etc/fwissr"
-    # default directory (relative to current user's home) where user's main conf file is located
+    # default directory (relative to current user's home)
+    # where user's main conf file is located
     DEFAULT_MAIN_USER_CONF_DIR = ".fwissr"
 
     def __init__(self):
         self._main_conf_path = self.DEFAULT_MAIN_CONF_PATH
-        self._main_user_conf_path = os.path.join(self.find_home(), self.DEFAULT_MAIN_USER_CONF_DIR)
+        self._main_user_conf_path = os.path.join(
+            self.find_home(),
+            self.DEFAULT_MAIN_USER_CONF_DIR)
         self._global_registry = None
         self._main_conf = None
         self._main_conf_file = None
@@ -25,18 +28,21 @@ class FwissrModule(object):
 
     def main_conf_path():
         doc = "The main_conf_path property."
+
         def fget(self):
             return self._main_conf_path
+
         def fset(self, value):
             self._main_conf_path = value
         return locals()
     main_conf_path = property(**main_conf_path())
 
-
     def main_user_conf_path():
         doc = "The main_user_conf_path property."
+
         def fget(self):
             return self._main_user_conf_path
+
         def fset(self, value):
             self._main_user_conf_path = value
         return locals()
@@ -61,12 +67,14 @@ class FwissrModule(object):
     def parse_args(self, argv):
         pass
 
-
     def global_registry(self):
         """Global Registry
 
 
-        NOTE: Parses main conf files (/etc/fwissr/fwissr.json and ~/.fwissr/fwissr.json) then uses 'fwissr_sources' setting to setup additional sources
+        NOTE: Parses main conf files (/etc/fwissr/fwissr.json
+            and ~/.fwissr/fwissr.json)
+
+        then uses 'fwissr_sources' setting to setup additional sources
 
         Example of /etc/fwissr/fwissr.json file:
 
@@ -74,7 +82,8 @@ class FwissrModule(object):
            'fwissr_sources': [
              { 'filepath': '/mnt/my_app/conf/' },
              { 'filepath': '/etc/my_app.json' },
-             { 'mongodb': 'mongodb://db1.example.net/my_app', 'collection': 'config', 'refresh': true },
+             { 'mongodb': 'mongodb://db1.example.net/my_app',
+                 'collection': 'config', 'refresh': true },
            ],
            'fwissr_refresh_period': 30,
         }
@@ -82,19 +91,26 @@ class FwissrModule(object):
         """
         if self._global_registry is None:
             if 'fwissr_refresh_period' in self.main_conf:
-                result = Registry(refresh_period = self.main_conf['fwissr_refresh_period'])
+                result = Registry(
+                    refresh_period=self.main_conf['fwissr_refresh_period'])
             else:
                 result = Registry()
 
-            if not os.path.exists(self.main_conf_file) and not os.path.exists(self.main_user_conf_file):
-                raise Exception("No fwissr conf file found", self.main_conf_file, self.main_user_conf_file)
+            if (not os.path.exists(self.main_conf_file)
+                    and not os.path.exists(self.main_user_conf_file)):
+                raise Exception(
+                    "No fwissr conf file found",
+                    self.main_conf_file, self.main_user_conf_file)
 
             if os.path.exists(self.main_conf_file):
-                result.add_source(SourceFactory.from_settings({'filepath': self.main_conf_file}))
+                result.add_source(
+                    SourceFactory.from_settings(
+                        {'filepath': self.main_conf_file}))
 
             if os.path.exists(self.main_user_conf_file):
-                result.add_source(SourceFactory.from_settings({'filepath': self.main_user_conf_file}))
-
+                result.add_source(
+                    SourceFactory.from_settings(
+                        {'filepath': self.main_user_conf_file}))
 
             if 'fwissr_sources' in self.main_conf:
                 for source in self.main_conf['fwissr_sources']:
@@ -103,29 +119,35 @@ class FwissrModule(object):
             self._global_registry = result
         return self._global_registry
 
-
     def main_conf():
         doc = "The main_conf property."
+
         def fget(self):
             if self._main_conf is None:
                 result = {}
                 if os.path.exists(self.main_conf_file):
-                    result = merge_conf(result, parse_conf_file(self.main_conf_file))
+                    result = merge_conf(
+                        result,
+                        parse_conf_file(self.main_conf_file))
 
                 if os.path.exists(self.main_user_conf_file):
-                    result = merge_conf(result, parse_conf_file(self.main_user_conf_file))
+                    result = merge_conf(
+                        result,
+                        parse_conf_file(self.main_user_conf_file))
 
                 self._main_conf = result
             return self._main_conf
         return locals()
     main_conf = property(**main_conf())
 
-
     def main_conf_file():
         doc = "The main_conf_file property."
+
         def fget(self):
             if self._main_conf_file is None:
-                self._main_conf_file = os.path.join(self.main_conf_path, self.MAIN_CONF_FILE)
+                self._main_conf_file = os.path.join(
+                    self.main_conf_path,
+                    self.MAIN_CONF_FILE)
 
             return self._main_conf_file
         return locals()
@@ -133,14 +155,16 @@ class FwissrModule(object):
 
     def main_user_conf_file():
         doc = "The main_user_conf_file property."
+
         def fget(self):
             if self._main_user_conf_file is None:
-                self._main_user_conf_file = os.path.join(self.main_user_conf_path, self.MAIN_CONF_FILE)
+                self._main_user_conf_file = os.path.join(
+                    self.main_user_conf_path,
+                    self.MAIN_CONF_FILE)
 
             return self._main_user_conf_file
         return locals()
     main_user_conf_file = property(**main_user_conf_file())
-
 
     def get(self, key):
         return self.global_registry().get(key)

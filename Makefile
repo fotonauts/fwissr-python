@@ -24,7 +24,7 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 
 lint:
-	flake8 fwissr-python tests
+	flake8 fwissr tests
 
 test:
 	python setup.py test

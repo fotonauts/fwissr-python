@@ -1,6 +1,7 @@
 from file import File
 from mongodb import Mongodb
 
+
 class SourceFactory(object):
     @classmethod
     def from_settings(self, settings):
