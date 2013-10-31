@@ -59,7 +59,7 @@ class File(AbstractSource):
         conf_file_name = os.path.splitext(os.path.basename(conf_file_path))[0]
         result_part = result
 
-        if not conf_file_name in File.TOP_LEVEL_CONF_FILES and not "top_level" in self._options:
+        if not conf_file_name in File.TOP_LEVEL_CONF_FILES and (not "top_level" in self._options or not self._options["top_level"]):
             for key_part in conf_file_name.split('.'):
                 if not key_part in result_part:
                     result_part[key_part] = {}

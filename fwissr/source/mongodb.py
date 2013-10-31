@@ -50,18 +50,39 @@ class Mongodb(AbstractSource):
 
         self._collection = None
 
+    def db_name():
+        doc = "The db_name property."
+        def fget(self):
+            return self._db_name
+        def fset(self, value):
+            self._db_name = value
+        def fdel(self):
+            del self._db_name
+        return locals()
+    db_name = property(**db_name())
+
+    def collection_name():
+        doc = "The collection_name property."
+        def fget(self):
+            return self._collection_name
+        def fset(self, value):
+            self._collection_name = value
+        def fdel(self):
+            del self._collection_name
+        return locals()
+    collection_name = property(**collection_name())
+
     def fetch_conf(self):
         result = {}
         result_part = result
 
-        if not self._collection_name in Mongodb.TOP_LEVEL_COLLECTIONS and not 'top_level' in self._options:
+        if not self._collection_name in Mongodb.TOP_LEVEL_COLLECTIONS and (not 'top_level' in self._options or not self._options["top_level"]):
             for key_part in self._collection_name.split("."):
                 if not key_part in result_part:
                     result_part[key_part] = {}
                 result_part = result_part[key_part]
 
         conf = {}
-
         for doc in self.collection().find():
             key = doc['_id']
             if not 'value' in doc:
@@ -71,7 +92,8 @@ class Mongodb(AbstractSource):
                 value = doc['value']
             conf[key] = value
 
-        return merge_conf(result_part, conf)
+        merge_conf(result_part, conf)
+        return result
 
     def collection(self):
         if self._collection is None:

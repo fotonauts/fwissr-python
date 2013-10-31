@@ -103,13 +103,13 @@ def tmp_mongo_port():
 def tmp_mongo_db():
     return "fwissr_spec"
 
-def mongo_connection_url(db = ""):
+def tmp_mongo_db_uri(db = ""):
     return "mongodb://%s:%s/%s" % (tmp_mongo_hostname(),
         tmp_mongo_port(),
         db)
 
 def mongo_connection():
-    return MongoClient(mongo_connection_url())
+    return MongoClient(tmp_mongo_db_uri())
 
 def create_tmp_mongo_col(name, conf):
     col = mongo_connection()[tmp_mongo_db()].create_collection(name)
