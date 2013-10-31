@@ -33,15 +33,15 @@ test-all:
 	tox
 
 coverage:
-	coverage run --source fwissr-python setup.py test
+	coverage run --source fwissr setup.py test
 	coverage report -m
 	coverage html
 	open htmlcov/index.html
 
 docs:
-	rm -f docs/fwissr-python.rst
+	rm -f docs/fwissr.rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ fwissr-python
+	sphinx-apidoc -o docs/ fwissr
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	open docs/_build/html/index.html

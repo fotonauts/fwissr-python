@@ -77,7 +77,7 @@ Ready to contribute? Here's how to set up `fwissr-python` for local development.
 5. When you're done making changes, check that your changes pass flake8 and the
 tests, including testing other Python versions with tox::
 
-    $ flake8 fwissr-python tests
+    $ flake8 fwissr tests
 	  $ python setup.py test
     $ tox
 

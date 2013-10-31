@@ -4,4 +4,4 @@ Usage
 
 To use fwissr in a project::
 
-	import fwissr-python
+	import fwissr

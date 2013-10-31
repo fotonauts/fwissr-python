@@ -181,7 +181,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'fwissr-pythondoc'
+htmlhelp_basename = 'fwissrdoc'
 
 
 # -- Options for LaTeX output -------------------------------------------------
@@ -201,7 +201,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass [howto/manual])
 latex_documents = [
     (
-        'index', 'fwissr-python.tex', u'fwissr Documentation',
+        'index', 'fwissr.tex', u'fwissr Documentation',
         u'Pierre Baillet', 'manual'),
 ]
 
@@ -231,7 +231,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'fwissr-python', u'fwissr Documentation',
+    ('index', 'fwissr', u'fwissr Documentation',
      [u'Pierre Baillet'], 1)
 ]
 
@@ -246,8 +246,8 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (
-        'index', 'fwissr-python', u'fwissr Documentation',
-        u'Pierre Baillet', 'fwissr-python', 'One line description of project.',
+        'index', 'fwissr', u'fwissr Documentation',
+        u'Pierre Baillet', 'fwissr', 'One line description of project.',
         'Miscellaneous'),
 ]
 

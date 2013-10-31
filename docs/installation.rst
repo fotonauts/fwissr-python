@@ -4,9 +4,9 @@ Installation
 
 At the command line::
 
-    $ easy_install fwissr-python
+    $ easy_install fwissr
 
 Or, if you have virtualenvwrapper installed::
 
-    $ mkvirtualenv fwissr-python
-    $ pip install fwissr-python
+    $ mkvirtualenv fwissr
+    $ pip install fwissr
