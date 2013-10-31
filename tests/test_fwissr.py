@@ -45,5 +45,9 @@ class TestFwissr(unittest.TestCase):
         self.assertEqual( Fwissr['cam'], { 'en': { 'bert': { 'pim': { 'pam': [ 'pom', 'pum' ] } } } })
         self.assertEqual( Fwissr['cam/en/bert/pim/pam'], [ 'pom', 'pum' ])
 
+    def test_handle_refresh_period_option(self):
+        setup_global_conf()
+        self.assertEqual( Fwissr.global_registry().refresh_period, 5)
+
 if __name__ == '__main__':
     unittest.main()
