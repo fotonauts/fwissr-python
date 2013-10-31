@@ -33,7 +33,7 @@ Create the main ``fwissr.json`` configuration file in either ``/etc/fwissr/`` or
      "horn" : { "loud" : true, "sounds": [ "TUuuUuuuu", "tiiiiiiIIiii" ] }
    }
 
-In your application, you can access `fwissr`'s global registry that way::
+In your application, you can access ``fwissr``'s global registry that way::
 
 
     from fwissr.fwissr import Fwissr
@@ -227,7 +227,7 @@ You can define a mongob collection as a configuration source::
 
 Each document in the collection is a setting for that configuration.
 
-The `_id` document field is the setting key, and the `value` document field is the setting value.
+The ``_id`` document field is the setting key, and the ``value`` document field is the setting value.
 
 For example::
 
@@ -236,6 +236,7 @@ For example::
     { "_id" : "database", "value" : { "host": "db.my_app.com", "port": "1337" } }
 
 ::
+
     from fwissr.fwissr import Fwissr
 
     Fwissr['/my_app/stuff/foo']
