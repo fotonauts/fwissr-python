@@ -71,7 +71,11 @@ print args
 if args.dump:
     result = Fwissr.dump()
 else:
-    result = args.key
+    if args.key is None:
+        k = "/"
+    else:
+        k = args.key
+    result = Fwissr.get(k)
 
 if args.json:
     if args.pretty:
@@ -80,9 +84,11 @@ if args.json:
             sort_keys=True,
             indent=4, separators=(',', ': '))
     else:
-        print json.dumps(result)
+        print json.dumps(result, sort_keys=True)
 elif args.inspect:
     if args.pretty:
         pprint.pprint(result)
     else:
         print result
+else:
+    print result

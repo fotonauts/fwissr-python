@@ -84,6 +84,9 @@ class Registry:
         if key_ary[0] == "":
             key_ary.pop(0)
 
+        if key_ary[-1] == "":
+            key_ary.pop(len(key_ary)-1)
+
         cur_hash = self._registry
         for key_component in key_ary:
             if key_component in cur_hash:

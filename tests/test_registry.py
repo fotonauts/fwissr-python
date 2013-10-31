@@ -16,14 +16,13 @@ from fwissr.source.file import File
 from fwissr.fwissr import Fwissr
 
 from test_helpers import tmp_conf_dir, delete_tmp_conf_files, \
-    delete_tmp_mongo_db, create_tmp_conf_file, tmp_conf_file
+    create_tmp_conf_file, tmp_conf_file
 
 
 class TestFwissr(unittest.TestCase):
     def setUp(self):
         Fwissr.main_conf_path = tmp_conf_dir()
         delete_tmp_conf_files()
-        delete_tmp_mongo_db()
 
     def test_create_source(self):
         test_conf = {'foo': 'bar', 'cam': {'en': 'bert'}}
@@ -112,6 +111,23 @@ class TestFwissr(unittest.TestCase):
 
         # test
         self.assertEqual(registry.dump(), {'test': test_conf})
+
+    def test_get_slash(self):
+        # create conf file
+        test_conf = {
+            'foo': 'bar',
+            'jean': ['bon', 'rage'],
+            'cam': {'en': {'bert': 'coulant'}},
+        }
+        create_tmp_conf_file('test.json', test_conf)
+
+        registry = Registry()
+        registry.add_source(File(
+            tmp_conf_file('test.json'),
+            {"top_level": True}))
+
+        # test
+        self.assertEqual(registry.get("/"), test_conf)
 
     def test_not_refresh_thread(self):
         # create conf file
