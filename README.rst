@@ -20,183 +20,168 @@ fwissr-python is a registry configuration tool, compatible with fwissr, its ruby
 Install
 =======
 
-```bash
-$ [sudo] pip install fwissr
-```
+
+``$ [sudo] pip install fwissr``
 
 Usage
 =====
 
-Create the main `fwissr.json` configuration file in either `/etc/fwissr/` or `~/.fwissr/` directory:
+Create the main ``fwissr.json`` configuration file in either ``/etc/fwissr/`` or ``~/.fwissr/`` directory::
 
-```json
-{
-  "foo" : "bar",
-  "horn" : { "loud" : true, "sounds": [ "TUuuUuuuu", "tiiiiiiIIiii" ] }
-}
-```
+   {
+     "foo" : "bar",
+     "horn" : { "loud" : true, "sounds": [ "TUuuUuuuu", "tiiiiiiIIiii" ] }
+   }
 
-In your application, you can access `fwissr`'s global registry that way:
+In your application, you can access `fwissr`'s global registry that way::
 
-```python
-from fwissr.fwissr import Fwissr
-Fwissr['/foo']
-# u'bar'
-Fwissr['/horn']
-# {u'sounds': [u'TUuuUuuuu', u'tiiiiiiIIiii'], u'loud': True}
-Fwissr['/horn/loud']
-# True
-Fwissr['/horn/sounds']
-# [u'TUuuUuuuu', u'tiiiiiiIIiii']
-```
 
-In bash you can call the `fwissr` tool:
+    from fwissr.fwissr import Fwissr
+    Fwissr['/foo']
+    # u'bar'
+    Fwissr['/horn']
+    # {u'sounds': [u'TUuuUuuuu', u'tiiiiiiIIiii'], u'loud': True}
+    Fwissr['/horn/loud']
+    # True
+    Fwissr['/horn/sounds']
+    # [u'TUuuUuuuu', u'tiiiiiiIIiii']
 
-```bash
-$ fwissr /foo
-bar
 
-# json output
-$ fwissr -j /horn
-{"loud": true, "sounds": ["TUuuUuuuu", "tiiiiiiIIiii"]}
+In bash you can call the `fwissr` tool::
 
-# pretty print json output
-$ fwissr -j -p /horn
-{
-    "loud": true,
-    "sounds": [
-        "TUuuUuuuu",
-        "tiiiiiiIIiii"
-    ]
-}
+    $ fwissr /foo
+    bar
 
-# dump all registry with pretty print json output
-# NOTE: yes, that's the same as 'fwissr -jp /'
-$ fwissr --dump -jp
-{
-  "horn": {
-    "loud": true,
-    "sound": [
-      "TUuuUuuuu",
-      "tiiiiiiIIiii"
-    ]
-  }
-}
-```
+    # json output
+    $ fwissr -j /horn
+    {"loud": true, "sounds": ["TUuuUuuuu", "tiiiiiiIIiii"]}
+
+    # pretty print json output
+    $ fwissr -j -p /horn
+    {
+        "loud": true,
+        "sounds": [
+            "TUuuUuuuu",
+            "tiiiiiiIIiii"
+        ]
+    }
+
+    # dump all registry with pretty print json output
+    # NOTE: yes, that's the same as 'fwissr -jp /'
+    $ fwissr --dump -jp
+    {
+      "horn": {
+        "loud": true,
+        "sound": [
+          "TUuuUuuuu",
+          "tiiiiiiIIiii"
+        ]
+      }
+    }
+
 
 
 Additional configuration file
 =============================
 
-Provide additional configuration files with the `fwissr_sources` setting in `fwissr.json`:
+Provide additional configuration files with the ``fwissr_sources`` setting in ``fwissr.json``::
 
-```json
-{
-  "fwissr_sources": [
-    { "filepath": "/etc/my_app.json" }
-  ]
-}
-```
+
+    {
+      "fwissr_sources": [
+        { "filepath": "/etc/my_app.json" }
+      ]
+    }
+
 
 The settings for that configuration will be prefixed with the file name.
 
-For example, with that `/etc/my_app.json`:
+For example, with that ``/etc/my_app.json``::
 
-```json
-{ "foo": "bar", "bar": "baz" }
-```
+    { "foo": "bar", "bar": "baz" }
 
-the settings can be accessed that way:
+the settings can be accessed that way::
 
-```python
-from fwissr.fwissr import Fwissr
+    from fwissr.fwissr import Fwissr
+    
+    Fwissr['/my_app']
+    #=> { "foo": "bar", "bar": "baz" }
+    
+    Fwissr['/my_app/foo']
+    #=> "bar"
 
-Fwissr['/my_app']
-#=> { "foo": "bar", "bar": "baz" }
+    Fwissr['/my_app/bar']
+    #=> "baz"
 
-Fwissr['/my_app/foo']
-#=> "bar"
+You can bypass that behaviour with the ``top_level`` setting::
 
-Fwissr['/my_app/bar']
-#=> "baz"
-```
+    {
+      "fwissr_sources": [
+        { "filepath": "/etc/my_app.json", "top_level": true }
+      ]
+    }
 
-You can bypass that behaviour with the `top_level` setting:
 
-```json
-{
-  "fwissr_sources": [
-    { "filepath": "/etc/my_app.json", "top_level": true }
-  ]
-}
-```
+With the ``top_level`` setting activated the configuration settings are added to registry root::
 
-With the `top_level` setting activated the configuration settings are added to registry root:
+    from fwissr.fwissr import Fwissr
 
-```python
-from fwissr.fwissr import Fwissr
+    Fwissr['/']
+    #=> { "foo": "bar", "bar": "baz" }
 
-Fwissr['/']
-#=> { "foo": "bar", "bar": "baz" }
+    Fwissr['/foo']
+    #=> "bar"
 
-Fwissr['/foo']
-#=> "bar"
+    Fwissr['/bar']
+    #=> "baz"
 
-Fwissr['/bar']
-#=> "baz"
-```
 
-Note that you can provide `.json` and `.yaml` configuration files.
+Note that you can provide ``.json`` and ``.yaml`` configuration files.
 
 
 Directory of configuration files
 ================================
 
-If the `filepath` setting is a directory, then all `.json` and `.yaml` files in that directory (but NOT in subdirectories) will be imported in global registry:
+If the ``filepath`` setting is a directory, then all ``.json`` and ``.yaml`` files in that directory (but NOT in subdirectories) will be imported in the global registry::
 
-```json
-{
-  "fwissr_sources": [
-    { "filepath": "/mnt/my_app/conf/" },
-  ],
-}
-```
+    {
+      "fwissr_sources": [
+        { "filepath": "/mnt/my_app/conf/" },
+      ],
+    }
 
-With `/mnt/my_app/conf/database.yaml`:
 
-```yaml
-production:
-  adapter: mysql2
-  encoding: utf8
-  database: my_app_db
-  username: my_app_user
-  password: my_app_pass
-  host: db.my_app.com
-```
+With ``/mnt/my_app/conf/database.yaml``::
 
-and `/mnt/my_app/conf/credentials.json`:
+    production:
+      adapter: mysql2
+      encoding: utf8
+      database: my_app_db
+      username: my_app_user
+      password: my_app_pass
+      host: db.my_app.com
 
-```json
-{ "key": "i5qw64816c", "code": "448e4wef161" }
-```
 
-the settings can be accessed that way:
+and ``/mnt/my_app/conf/credentials.json``::
 
-```python
-from fwissr.fwissr import Fwissr
+    { "key": "i5qw64816c", "code": "448e4wef161" }
 
-Fwissr['/database']
-#=> { "production": { "adapter": "mysql2", "encoding": "utf8", "database": "my_app_db", "username": "my_app_user", "password": "my_app_pass", "host": "db.my_app.com" } }
 
-Fwissr['/database/production/host']
-#=> "db.my_app.com"
+the settings can be accessed that way::
 
-Fwissr['/credentials']
-#=> { "key": "i5qw64816c", "code": "448e4wef161" }
+    from fwissr.fwissr import Fwissr
 
-Fwissr['/credentials/key']
-#=> "i5qw64816c"
-```
+    Fwissr['/database']
+    #=> { "production": { "adapter": "mysql2", "encoding": "utf8", "database": "my_app_db", "username": "my_app_user", "password": "my_app_pass", "host": "db.my_app.com" } }
+
+    Fwissr['/database/production/host']
+    #=> "db.my_app.com"
+
+    Fwissr['/credentials']
+    #=> { "key": "i5qw64816c", "code": "448e4wef161" }
+
+    Fwissr['/credentials/key']
+    #=> "i5qw64816c"
 
 
 File name mapping to setting path
@@ -204,74 +189,65 @@ File name mapping to setting path
 
 Use dots in file name to define a path for configuration settings.
 
-For example:
+For example::
 
-```json
-{
-  "fwissr_sources": [
-    { "filepath": "/etc/my_app.database.slave.json" }
-  ]
-}
-```
+    {
+      "fwissr_sources": [
+        { "filepath": "/etc/my_app.database.slave.json" }
+      ]
+    }
 
-with that `/etc/my_app.database.slave.json`:
+with that ``/etc/my_app.database.slave.json``::
 
-```json
-{ "host": "db.my_app.com", "port": "1337" }
-```
 
-the settings can be accessed that way:
+    { "host": "db.my_app.com", "port": "1337" }
 
-```python
-from fwissr.fwissr import Fwissr
+The settings can be accessed that way::
 
-Fwissr['/my_app/database/slave/host']
-#=> "db.my_app.com"
+    from fwissr.fwissr import Fwissr
 
-Fwissr['/my_app/database/slave/port']
-#=> "1337"
-```
+    Fwissr['/my_app/database/slave/host']
+    #=> "db.my_app.com"
+
+    Fwissr['/my_app/database/slave/port']
+    #=> "1337"
 
 
 Mongodb source
 ==============
 
-You can define a mongob collection as a configuration source:
+You can define a mongob collection as a configuration source::
 
-```json
-{
-  "fwissr_sources": [
-    { "mongodb": "mongodb://db1.example.net/my_app", "collection": "config" }
-  ]
-}
-```
+    {
+      "fwissr_sources": [
+        { "mongodb": "mongodb://db1.example.net/my_app", "collection": "config" }
+      ]
+    }
+
 
 Each document in the collection is a setting for that configuration.
 
 The `_id` document field is the setting key, and the `value` document field is the setting value.
 
-For example:
+For example::
 
-```
-> db["my_app.stuff"].find()
-{ "_id" : "foo", "value" : "bar" }
-{ "_id" : "database", "value" : { "host": "db.my_app.com", "port": "1337" } }
-```
+    > db["my_app.stuff"].find()
+    { "_id" : "foo", "value" : "bar" }
+    { "_id" : "database", "value" : { "host": "db.my_app.com", "port": "1337" } }
 
-```python
-from fwissr.fwissr import Fwissr
+::
+    from fwissr.fwissr import Fwissr
 
-Fwissr['/my_app/stuff/foo']
-#=> "bar"
+    Fwissr['/my_app/stuff/foo']
+    #=> "bar"
 
-Fwissr['/my_app/stuff/database']
-#=> { "host": "db.my_app.com", "port": "1337" }
+    Fwissr['/my_app/stuff/database']
+    #=> { "host": "db.my_app.com", "port": "1337" }
 
-Fwissr['/my_app/stuff/database/port']
-#=> "1337"
-```
+    Fwissr['/my_app/stuff/database/port']
+    #=> "1337"
 
-As with configuration files you can use dots in collection name to define a path for configuration settings. The `top_level` setting is also supported to bypass that behaviour. Note too that the `fwissr` collection is by default a `top_level` configuration (as the `/etc/fwissr/fwissr.json` configuration file).
+As with configuration files you can use dots in collection name to define a path for configuration settings. The ``top_level`` setting is also supported to bypass that behaviour. Note too that the ``fwissr`` collection is by default a ``top_level`` configuration (as the ``/etc/fwissr/fwissr.json`` configuration file).
 
 
 Refreshing registry
@@ -279,82 +255,73 @@ Refreshing registry
 
 Enable registry auto-update with the `refresh` source setting.
 
-For example:
+For example::
 
-```json
-{
-  "fwissr_sources": [
-    { "filepath": "/etc/my_app/my_app.json" },
-    { "filepath": "/etc/my_app/stuff.json", "refresh": true },
-    { "mongodb": "mongodb://db1.example.net/my_app", "collection": "production" },
-    { "mongodb": "mongodb://db1.example.net/my_app", "collection": "config", "refresh": true }
-  ]
-}
-```
+    {
+      "fwissr_sources": [
+        { "filepath": "/etc/my_app/my_app.json" },
+        { "filepath": "/etc/my_app/stuff.json", "refresh": true },
+        { "mongodb": "mongodb://db1.example.net/my_app", "collection": "production" },
+        { "mongodb": "mongodb://db1.example.net/my_app", "collection": "config", "refresh": true }
+      ]
+    }
 
-The `/etc/my_app/my_app.json` configuration file and the `production` mongodb collection are read only once, whereas the settings holded by the `/etc/my_app/stuff.json` configuration file and the `config` mongodb collection are expired periodically and re-fetched.
+The ``/etc/my_app/my_app.json`` configuration file and the ``production`` mongodb collection are read only once, whereas the settings holded by the ``/etc/my_app/stuff.json`` configuration file and the ``config`` mongodb collection are expired periodically and re-fetched.
 
-The default freshness is 30 seconds, but you can change it with the `fwissr_refresh_period` setting:
+The default freshness is 30 seconds, but you can change it with the ``fwissr_refresh_period`` setting::
 
-```json
-{
-  "fwissr_sources": [
-    { "filepath": "/etc/my_app/my_app.json" },
-    { "filepath": "/etc/my_app/stuff.json", "refresh": true },
-    { "mongodb": "mongodb://db1.example.net/my_app", "collection": "production" },
-    { "mongodb": "mongodb://db1.example.net/my_app", "collection": "config", "refresh": true }
-   ],
-  "fwissr_refresh_period": 60
-}
-```
+    {
+      "fwissr_sources": [
+        { "filepath": "/etc/my_app/my_app.json" },
+        { "filepath": "/etc/my_app/stuff.json", "refresh": true },
+        { "mongodb": "mongodb://db1.example.net/my_app", "collection": "production" },
+        { "mongodb": "mongodb://db1.example.net/my_app", "collection": "config", "refresh": true }
+       ],
+      "fwissr_refresh_period": 60
+    }
 
-The refresh is done periodically in a thread:
+The refresh is done periodically in a thread::
 
-```python
-from fwissr.fwissr import Fwissr
-import time
+    from fwissr.fwissr import Fwissr
+    import time
 
-Fwissr['/stuff/foo']
-#=> "bar"
+    Fwissr['/stuff/foo']
+    #=> "bar"
 
-# > Change '/etc/my_app/stuff.json' file by setting: {"foo":"baz"}
+    # > Change '/etc/my_app/stuff.json' file by setting: {"foo":"baz"}
 
-# Wait 2 minutes
-time.sleep(120)
+    # Wait 2 minutes
+    time.sleep(120)
 
-# The new value is now in the registry
-Fwissr['/stuff/foo']
-#=> "baz"
-```
+    # The new value is now in the registry
+    Fwissr['/stuff/foo']
+    #=> "baz"
 
 
 Create a custom registry
 ========================
 
-`fwissr` is intended to be easy to setup: just create a configuration file and that configuration is accessible via the global registry. But if you need to, you can create your own custom registry.
+``fwissr`` is intended to be easy to setup: just create a configuration file and that configuration is accessible via the global registry. But if you need to, you can create your own custom registry::
 
-```python
-from fwissr.fwissr import Fwissr
-from fwissr.registry import Registry
-from fwissr.source.source_factory import SourceFactory
-# create a custom registry
-registry = Registry(refresh_period=20)
+    from fwissr.fwissr import Fwissr
+    from fwissr.registry import Registry
+    from fwissr.source.source_factory import SourceFactory
+    # create a custom registry
+    registry = Registry(refresh_period=20)
 
-# add configuration sources to registry
-registry.add_source(SourceFactory.from_settings({ 'filepath': '/etc/my_app/my_app.json' }))
-registry.add_source(SourceFactory.from_settings({ 'filepath': '/etc/my_app/stuff.json', 'refresh': true }))
-registry.add_source(SourceFactory.from_settings({ 'mongodb': 'mongodb://db1.example.net/my_app', 'collection': 'production' }))
-registry.add_source(FSourceFactory.from_settings({ 'mongodb': 'mongodb://db1.example.net/my_app', 'collection': 'config', 'refresh': True }))
+    # add configuration sources to registry
+    registry.add_source(SourceFactory.from_settings({ 'filepath': '/etc/my_app/my_app.json' }))
+    registry.add_source(SourceFactory.from_settings({ 'filepath': '/etc/my_app/stuff.json', 'refresh': true }))
+    registry.add_source(SourceFactory.from_settings({ 'mongodb': 'mongodb://db1.example.net/my_app', 'collection': 'production' }))
+    registry.add_source(FSourceFactory.from_settings({ 'mongodb': 'mongodb://db1.example.net/my_app', 'collection': 'config', 'refresh': True }))
 
-registry['/stuff/foo']
-#=> 'bar'
-```
-
+    registry['/stuff/foo']
+    #=> 'bar'
 
 Create a custom source
 ======================
 
-Currently `fwissr.source.file.File` and `fwissr.source.mongodb.Mongodb` are the two kinds of possible registry sources, but you can define your own source:
+Currently ``fwissr.source.file.File`` and ``fwissr.source.mongodb.Mongodb`` are the two kinds of possible registry sources, but you can define your own source:
 
 
 TODO
