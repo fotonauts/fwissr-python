@@ -10,6 +10,8 @@ try:
 except ImportError:
     from distutils.core import setup
 
+from fwissr.version import VERSION
+
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
     sys.exit()
@@ -19,16 +21,18 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='fwissr',
-    version='0.1.0',
-    description='fwissr is a registry configuration tool, compatible with fwissr',
+    version=VERSION,
+    description='fwissr is a registry configuration tool.',
     long_description=readme + '\n\n' + history,
     author='Pierre Baillet',
     author_email='pierre@baillet.name',
     url='https://github.com/fotonauts/fwissr-python',
     packages=[
         'fwissr',
+        'fwissr.source'
     ],
-    package_dir={'fwissr': 'fwissr'},
+    scripts=['scripts/fwissr'],
+    package_dir={'fwissr': 'fwissr', 'fwissr.source': 'fwissr/source'},
     include_package_data=True,
     install_requires=[
         'pymongo>=2.5.2',

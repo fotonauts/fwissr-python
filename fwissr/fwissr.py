@@ -172,4 +172,10 @@ class FwissrModule(object):
     def __getitem__(self, key):
         return self.global_registry().get(key)
 
+    def keys(self):
+        return self.global_registry().keys()
+
+    def dump(self):
+        return self.global_registry().dump()
+
 Fwissr = FwissrModule()
