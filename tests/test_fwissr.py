@@ -22,10 +22,28 @@ class TestFwissr(unittest.TestCase):
 
     def test_manager_global_registry(self):
         setup_global_conf()
-        self.assertEqual(Fwissr['/foo'], 'bar')
-        self.assertEqual(Fwissr['/bar'], 'baz')
+        self.assertEqual( Fwissr['/foo'], 'bar')
+        self.assertEqual( Fwissr['/bar'], 'baz')
         self.assertEqual( Fwissr['/cam'], { 'en': { 'bert': { 'pim': { 'pam': [ 'pom', 'pum' ] } } } })
+        self.assertEqual( Fwissr['/cam/en'], { 'bert': { 'pim': { 'pam': [ 'pom', 'pum' ] } } })
+        self.assertEqual( Fwissr['/cam/en/bert'], { 'pim': { 'pam': [ 'pom', 'pum' ] } })
+        self.assertEqual( Fwissr['/cam/en/bert/pim'], { 'pam': [ 'pom', 'pum' ] })
+        self.assertEqual( Fwissr['/cam/en/bert/pim/pam'], [ 'pom', 'pum' ])
+        self.assertEqual( Fwissr['/gein'], 'gembre')
+        self.assertEqual( Fwissr['/mouarf'], { 'lol': { 'meu': 'ringue', 'pa': { 'pri': 'ka'} } })
+        self.assertEqual( Fwissr['/mouarf/lol'], { 'meu': 'ringue', 'pa': { 'pri': 'ka'} })
+        self.assertEqual( Fwissr['/mouarf/lol/meu'], 'ringue')
+        self.assertEqual( Fwissr['/mouarf/lol/pa'], { 'pri': 'ka'})
+        self.assertEqual( Fwissr['/mouarf/lol/pa/pri'], 'ka')
+        self.assertEqual( Fwissr['/pa'], { 'ta': 'teu'})
+        self.assertEqual( Fwissr['/pa/ta'], 'teu')
 
+    def test_no_leading_slash_is_ok(self):
+        setup_global_conf()
+
+        self.assertEqual( Fwissr['foo'], 'bar')
+        self.assertEqual( Fwissr['cam'], { 'en': { 'bert': { 'pim': { 'pam': [ 'pom', 'pum' ] } } } })
+        self.assertEqual( Fwissr['cam/en/bert/pim/pam'], [ 'pom', 'pum' ])
 
 if __name__ == '__main__':
     unittest.main()

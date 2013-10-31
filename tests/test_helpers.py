@@ -39,8 +39,8 @@ def setup_global_conf():
         'fwissr_sources': [
             { 'filepath': tmp_conf_file(first) },
             { 'filepath': tmp_conf_file(second), 'top_level': True },
-            { 'mongodb': mongo_connection_url(tmp_mongo_db()), 'collection': 'roque.fort', 'top_level': True },
-            { 'mongodb': mongo_connection_url(tmp_mongo_db()), 'collection': 'cam.en.bert' },
+            { 'mongodb': tmp_mongo_db_uri(tmp_mongo_db()), 'collection': 'roque.fort', 'top_level': True },
+            { 'mongodb': tmp_mongo_db_uri(tmp_mongo_db()), 'collection': 'cam.en.bert' },
         ],
         'fwissr_refresh_period': 5,
         'foo':'bar',
