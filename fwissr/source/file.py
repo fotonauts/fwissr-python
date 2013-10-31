@@ -40,7 +40,11 @@ class File(AbstractSource):
         result = {}
 
         if os.path.isdir(self._path):
-            conf_files = glob.glob(os.path.join(self._path), "/*.{json,yml,yaml}").sort()
+            conf_files = []
+            file_types = ("*.json", "*.yml", "*.yaml")
+            for type in file_types:
+                conf_files.extend(glob.glob(os.path.join(self._path,  type)))
+            conf_files.sort()
         else:
             conf_files = [self._path]
 
