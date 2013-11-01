@@ -306,15 +306,15 @@ Create a custom registry
 
     from fwissr.fwissr import Fwissr
     from fwissr.registry import Registry
-    from fwissr.source.source_factory import SourceFactory
+    from fwissr.source.source import Source
     # create a custom registry
     registry = Registry(refresh_period=20)
 
     # add configuration sources to registry
-    registry.add_source(SourceFactory.from_settings({ 'filepath': '/etc/my_app/my_app.json' }))
-    registry.add_source(SourceFactory.from_settings({ 'filepath': '/etc/my_app/stuff.json', 'refresh': true }))
-    registry.add_source(SourceFactory.from_settings({ 'mongodb': 'mongodb://db1.example.net/my_app', 'collection': 'production' }))
-    registry.add_source(FSourceFactory.from_settings({ 'mongodb': 'mongodb://db1.example.net/my_app', 'collection': 'config', 'refresh': True }))
+    registry.add_source(Source.from_settings({ 'filepath': '/etc/my_app/my_app.json' }))
+    registry.add_source(Source.from_settings({ 'filepath': '/etc/my_app/stuff.json', 'refresh': true }))
+    registry.add_source(Source.from_settings({ 'mongodb': 'mongodb://db1.example.net/my_app', 'collection': 'production' }))
+    registry.add_source(Source.from_settings({ 'mongodb': 'mongodb://db1.example.net/my_app', 'collection': 'config', 'refresh': True }))
 
     registry['/stuff/foo']
     #=> 'bar'

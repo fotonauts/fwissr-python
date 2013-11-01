@@ -3,7 +3,7 @@
 
 import os
 from registry import Registry
-from source.source_factory import SourceFactory
+from source.source import Source
 from conf import parse_conf_file, merge_conf
 
 
@@ -104,17 +104,17 @@ class FwissrModule(object):
 
             if os.path.exists(self.main_conf_file):
                 result.add_source(
-                    SourceFactory.from_settings(
+                    Source.from_settings(
                         {'filepath': self.main_conf_file}))
 
             if os.path.exists(self.main_user_conf_file):
                 result.add_source(
-                    SourceFactory.from_settings(
+                    Source.from_settings(
                         {'filepath': self.main_user_conf_file}))
 
             if 'fwissr_sources' in self.main_conf:
                 for source in self.main_conf['fwissr_sources']:
-                    result.add_source(SourceFactory.from_settings(source))
+                    result.add_source(Source.from_settings(source))
 
             self._global_registry = result
         return self._global_registry

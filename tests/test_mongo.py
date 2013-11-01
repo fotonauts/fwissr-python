@@ -11,7 +11,7 @@ Tests for `fwissr` module.
 import unittest
 
 from fwissr.source.mongodb import Mongodb
-from fwissr.source.source_factory import SourceFactory
+from fwissr.source.source import Source
 
 from test_helpers import \
     delete_tmp_mongo_db, create_tmp_mongo_col, tmp_mongo_db_uri, tmp_mongo_db
@@ -34,7 +34,7 @@ class TestFwissr(unittest.TestCase):
     def test_instanciate_from_uri(self):
         create_tmp_mongo_col('test', {})
 
-        source = SourceFactory.from_settings(
+        source = Source.from_settings(
             {'mongodb': tmp_mongo_db_uri(tmp_mongo_db()),
                 'collection': 'test'}
         )
@@ -45,7 +45,7 @@ class TestFwissr(unittest.TestCase):
 
     def test_fetches_conf(self):
         test_conf = self.create_test_conf('test')
-        source = SourceFactory.from_settings(
+        source = Source.from_settings(
             {'mongodb': tmp_mongo_db_uri(tmp_mongo_db()),
                 'collection': 'test'})
 
@@ -54,7 +54,7 @@ class TestFwissr(unittest.TestCase):
 
     def test_map_collection_names_to_key_pars(self):
         test_conf = self.create_test_conf('cam.en.bert')
-        source = SourceFactory.from_settings(
+        source = Source.from_settings(
             {'mongodb': tmp_mongo_db_uri(tmp_mongo_db()),
                 'collection': 'cam.en.bert'})
 
@@ -64,7 +64,7 @@ class TestFwissr(unittest.TestCase):
     def test_no_map_for_top_level(self):
         top_level_conf_col_name = Mongodb.TOP_LEVEL_COLLECTIONS[0]
         test_conf = self.create_test_conf(top_level_conf_col_name)
-        source = SourceFactory.from_settings(
+        source = Source.from_settings(
             {'mongodb': tmp_mongo_db_uri(tmp_mongo_db()),
                 'collection': top_level_conf_col_name})
 
@@ -73,7 +73,7 @@ class TestFwissr(unittest.TestCase):
 
     def test_no_map_for_keyparts_for_top_level(self):
         test_conf = self.create_test_conf('cam.en.bert')
-        source = SourceFactory.from_settings(
+        source = Source.from_settings(
             {'mongodb': tmp_mongo_db_uri(tmp_mongo_db()),
                 'collection': 'cam.en.bert', 'top_level': True})
 
@@ -83,7 +83,7 @@ class TestFwissr(unittest.TestCase):
     def test_refresh_if_allowed(self):
         test_conf = self.create_test_conf('test')
 
-        source = SourceFactory.from_settings(
+        source = Source.from_settings(
             {'mongodb': tmp_mongo_db_uri(tmp_mongo_db()),
                 'collection': 'test', 'refresh': True})
 
@@ -102,7 +102,7 @@ class TestFwissr(unittest.TestCase):
     def test_NO_refresh_when_NOT_allowed(self):
         test_conf = self.create_test_conf('test')
 
-        source = SourceFactory.from_settings(
+        source = Source.from_settings(
             {'mongodb': tmp_mongo_db_uri(tmp_mongo_db()),
                 'collection': 'test'})
 
@@ -121,7 +121,7 @@ class TestFwissr(unittest.TestCase):
     def test_reset(self):
         test_conf = self.create_test_conf('test')
 
-        source = SourceFactory.from_settings(
+        source = Source.from_settings(
             {'mongodb': tmp_mongo_db_uri(tmp_mongo_db()),
                 'collection': 'test'})
 

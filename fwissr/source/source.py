@@ -2,7 +2,7 @@ from file import File
 from mongodb import Mongodb
 
 
-class SourceFactory(object):
+class Source(object):
     @classmethod
     def from_settings(self, settings):
         if not isinstance(settings, dict):
