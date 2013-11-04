@@ -2,7 +2,23 @@ from threading import RLock, Thread
 
 from conf import merge_conf
 import UserDict
+import UserList
 import time
+
+
+class ReadOnlyList(UserList.UserList):
+    def __setitem__(self, i, item):
+        raise TypeError
+
+    def update(self, array=None):
+        if array is None:
+            pass
+        elif isinstance(array, UserList.UserList):
+            self.data = array.data
+        elif isinstance(array, type([])):
+            self.data = array
+        else:
+            raise TypeError
 
 
 class ReadOnlyDict(UserDict.IterableUserDict):
@@ -54,10 +70,26 @@ class Registry:
         self._refresh_period = refresh_period
 
         self._registry = {}
+        self._frozen = False
         self.sources = []
 
         self.semaphore = RLock()
         self.refresh_thread = None
+
+    def frozen():
+        doc = "The frozen property."
+
+        def fget(self):
+            return self._frozen
+
+        def fset(self, value):
+            self._frozen = value
+
+        def fdel(self):
+            del self._frozen
+
+        return locals()
+    frozen = property(**frozen())
 
     def refresh_period():
         doc = "The refresh_period property."
@@ -70,13 +102,41 @@ class Registry:
     def add_source(self, source):
         with self.semaphore:
             self.sources.append(source)
-            merge_conf(self._registry, source.get_conf())
+
+        if self._frozen:
+            self.reload()
+        else:
+            with self.semaphore:
+                merge_conf(self._registry, source.get_conf())
 
         self.ensure_refresh_thread()
+        self.ensure_frozen()
 
     def reload(self):
         self.reset()
         self.load()
+
+    def deep_freeze(self, what):
+        if isinstance(what, dict) or isinstance(what, UserDict.UserDict):
+            w = {}
+            for (key, value) in what.items():
+                if(isinstance(value, dict)
+                        or isinstance(value, UserDict.UserDict)):
+                    w[key] = self.deep_freeze(value)
+                elif (isinstance(value, type([]))
+                        or isinstance(value, UserList.UserList)):
+                    w[key] = self.deep_freeze(value)
+                else:
+                    w[key] = value
+            r = ReadOnlyDict()
+            r.update(w)
+            return r
+        elif isinstance(what, type([])) or isinstance(what, UserList.UserList):
+            r = ReadOnlyList()
+            r.update(what)
+            return r
+        else:
+            raise Exception("Deep Freezine failed for", what)
 
     def get(self, key):
         key_ary = key.split("/")
@@ -107,9 +167,6 @@ class Registry:
     def dump(self):
         return self._registry
 
-    def refres_thread(self):
-        pass
-
     def have_refreshable_source(self):
         with self.semaphore:
             return True in [source.can_refresh() for source in self.sources]
@@ -125,14 +182,22 @@ class Registry:
             self.refresh_thread.daemon = True
             self.refresh_thread.start()
 
+    def ensure_frozen(self):
+        if not self._frozen:
+            with self.semaphore:
+                self._registry = self.deep_freeze(self._registry)
+                self._frozen = True
+
     def reset(self):
         with self.semaphore:
             self._registry = {}
+            self._frozen = False
             [source.reset() for source in self.sources]
 
     def load(self):
         with self.semaphore:
             self._registry = {}
+            self.frozen = False
             for source in self.sources:
                 source_conf = source.get_conf()
                 merge_conf(self._registry, source_conf)
@@ -151,6 +216,6 @@ class Registry:
         for (key, value) in dct.items():
             key_ary.append(key)
             result.append("/%s" % ("/".join(key_ary)))
-            if isinstance(value, dict):
+            if isinstance(value, dict) or isinstance(value, UserDict.UserDict):
                 self._keys(result, key_ary, value)
             key_ary.pop()

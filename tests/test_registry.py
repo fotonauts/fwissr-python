@@ -233,5 +233,29 @@ class TestFwissr(unittest.TestCase):
         registry.reload()
         self.assertEqual(registry.dump(), {'test': test_conf_modified})
 
+    def test_frozen(self):
+        test_conf = {
+            'foo': 'bar',
+            'cam': {'en': 'bert'},
+        }
+        create_tmp_conf_file('test.json', test_conf)
+
+        test_conf = {
+            'foo': 'baz',
+            'cam': {'et': 'rat'},
+            'jean': 'bon',
+        }
+        create_tmp_conf_file('test2.json', test_conf)
+        registry = Registry()
+        registry.add_source(File(
+            tmp_conf_file('test.json'),
+            {'top_level': True}))
+
+        self.assertEqual(registry['/foo'], 'bar')
+        self.assertTrue(registry.frozen)
+        with self.assertRaises(TypeError):
+            registry['/cam']['heu'] = 'lotte'
+
+
 if __name__ == '__main__':
     unittest.main()
