@@ -97,7 +97,7 @@ class FwissrModule(object):
                 result = Registry()
 
             if (os.path.exists(self.main_conf_path) or
-                os.path.exists(self.main_user_conf_path)):
+                    os.path.exists(self.main_user_conf_path)):
 
                 if os.path.exists(self.main_conf_path):
                     result.add_source(

@@ -1,18 +1,18 @@
-# mongodb.py
-from abstract_source import AbstractSource
+"Mongodb Abstract Source code for fwissr"
+from fwissr.source.abstract_source import AbstractSource
 import copy
-
 from ..conf import merge_conf
 import urlparse
-
 from pymongo import MongoClient
 
-connections = {}
+CONNECTIONS = {}
 
 
 class Mongodb(AbstractSource):
+    "A MongoDB base source that provides data for fwissr"
     @classmethod
-    def from_settings(self, settings):
+    def from_settings(cls, settings):
+        """Read Mongodb Source configuration from the provided settings"""
         if not 'mongodb' in settings or not 'collection' in settings or \
                 settings['mongodb'] == '' or settings['collection'] == '':
             raise Exception(
@@ -34,14 +34,14 @@ class Mongodb(AbstractSource):
         del options['collection']
 
         return Mongodb(
-            self.connection_for_uri(cx_uri),
+            cls.connection_for_uri(cx_uri),
             db_name, settings['collection'], options)
 
     @classmethod
-    def connection_for_uri(self, uri):
-        if not uri in connections:
-            connections[uri] = MongoClient(uri)
-        return connections[uri]
+    def connection_for_uri(cls, uri):
+        if not uri in CONNECTIONS:
+            CONNECTIONS[uri] = MongoClient(uri)
+        return CONNECTIONS[uri]
 
     TOP_LEVEL_COLLECTIONS = ['fwissr']
 

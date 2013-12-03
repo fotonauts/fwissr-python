@@ -48,8 +48,8 @@ class File(AbstractSource):
         if os.path.isdir(self._path):
             conf_files = []
             file_types = ("*.json", "*.yml", "*.yaml")
-            for type in file_types:
-                conf_files.extend(glob.glob(os.path.join(self._path,  type)))
+            for ftype in file_types:
+                conf_files.extend(glob.glob(os.path.join(self._path, ftype)))
             conf_files.sort()
         else:
             conf_files = [self._path]
@@ -61,6 +61,7 @@ class File(AbstractSource):
         return result
 
     def merge_conf_file(self, result, conf_file_path):
+        "Merge a configuration in file with current configuration"
         conf = parse_conf_file(conf_file_path)
         conf_file_name = os.path.splitext(os.path.basename(conf_file_path))[0]
         result_part = result
