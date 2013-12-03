@@ -66,7 +66,11 @@ parser.add_argument(
 
 
 args = parser.parse_args()
-print args
+
+if args.key is None and not args.json:
+    print "Please specify the key, e.g. 'fwissr /fqdn'"
+    print parser.print_help()
+    parser.exit()
 
 if args.dump:
     result = Fwissr.dump()
