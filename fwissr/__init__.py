@@ -4,5 +4,5 @@
 __author__ = 'Pierre Baillet'
 __email__ = 'pierre@baillet.name'
 
-import version
-__version__ = version.VERSION
+from version import VERSION
+__version__ = VERSION
