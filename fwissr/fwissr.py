@@ -96,25 +96,22 @@ class FwissrModule(object):
             else:
                 result = Registry()
 
-            if (not os.path.exists(self.main_conf_file)
-                    and not os.path.exists(self.main_user_conf_file)):
-                raise Exception(
-                    "No fwissr conf file found",
-                    self.main_conf_file, self.main_user_conf_file)
+            if (os.path.exists(self.main_conf_path) or
+                os.path.exists(self.main_user_conf_path)):
 
-            if os.path.exists(self.main_conf_file):
-                result.add_source(
-                    Source.from_settings(
-                        {'filepath': self.main_conf_file}))
+                if os.path.exists(self.main_conf_path):
+                    result.add_source(
+                        Source.from_settings(
+                            {'filepath': self.main_conf_path}))
 
-            if os.path.exists(self.main_user_conf_file):
-                result.add_source(
-                    Source.from_settings(
-                        {'filepath': self.main_user_conf_file}))
+                if os.path.exists(self.main_user_conf_path):
+                    result.add_source(
+                        Source.from_settings(
+                            {'filepath': self.main_user_conf_path}))
 
-            if 'fwissr_sources' in self.main_conf:
-                for source in self.main_conf['fwissr_sources']:
-                    result.add_source(Source.from_settings(source))
+                if 'fwissr_sources' in self.main_conf:
+                    for source in self.main_conf['fwissr_sources']:
+                        result.add_source(Source.from_settings(source))
 
             self._global_registry = result
         return self._global_registry
