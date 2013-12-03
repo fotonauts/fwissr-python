@@ -3,13 +3,13 @@ fwissr
 ===============================
 
 .. image:: https://badge.fury.io/py/fwissr-python.png
-    :target: http://badge.fury.io/py/fwissr-python
+    :target: http://badge.fury.io/py/fwissr
     
 .. image:: https://travis-ci.org/fotonauts/fwissr-python.png?branch=master
         :target: https://travis-ci.org/fotonauts/fwissr-python
 
 .. image:: https://pypip.in/d/fwissr-python/badge.png
-        :target: https://crate.io/packages/fwissr-python?version=latest
+        :target: https://crate.io/packages/fwissr?version=latest
 
 
 fwissr-python is a registry configuration tool, compatible with fwissr, its ruby counterpart. Made by fotonauts.
