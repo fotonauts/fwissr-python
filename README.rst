@@ -2,13 +2,13 @@
 fwissr
 ===============================
 
-.. image:: https://badge.fury.io/py/fwissr-python.png
+.. image:: https://badge.fury.io/py/fwissr.png
     :target: http://badge.fury.io/py/fwissr
     
 .. image:: https://travis-ci.org/fotonauts/fwissr-python.png?branch=master
         :target: https://travis-ci.org/fotonauts/fwissr-python
 
-.. image:: https://pypip.in/d/fwissr-python/badge.png
+.. image:: https://pypip.in/d/fwissr/badge.png
         :target: https://crate.io/packages/fwissr?version=latest
 
 
