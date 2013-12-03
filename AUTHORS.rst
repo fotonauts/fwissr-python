@@ -5,9 +5,10 @@ Credits
 Development Lead
 ----------------
 
-* Pierre Baillet <pierre@baillet.name>
+* Aymerick Jéhanne <aymerick@jehanne.org>
 
 Contributors
 ------------
 
-None yet. Why not be the first?
+* Pierre Baillet <pierre@baillet.name>: Port to python
+

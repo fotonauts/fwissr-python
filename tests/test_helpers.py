@@ -73,7 +73,7 @@ def create_tmp_conf_file(filename, conf):
     if os.path.splitext(filename)[1] == ".json":
         f.write(json.dumps(conf, sort_keys=True))
     elif os.path.splitext(filename)[1] == ".yml":
-        f.write(yaml.dump(conf, Dumper=yaml.CDumper))
+        f.write(yaml.dump(conf))
     else:
         raise Exception("Unsupported conf file type", filename)
     f.close()

@@ -142,8 +142,8 @@ class TestFwissr(unittest.TestCase):
             File(tmp_conf_file('test.json'), {'refresh': True}))
 
         # check
-        self.assertIsNotNone(registry.refresh_thread)
-        self.assertIs(registry.refresh_thread.is_alive(), True)
+        self.assertTrue(registry.refresh_thread is not None)
+        self.assertTrue(registry.refresh_thread.is_alive())
 
     def test_no_refresh_until_refresh_option(self):
         test_conf = {
@@ -253,8 +253,7 @@ class TestFwissr(unittest.TestCase):
 
         self.assertEqual(registry['/foo'], 'bar')
         self.assertTrue(registry.frozen)
-        with self.assertRaises(TypeError):
-            registry['/cam']['heu'] = 'lotte'
+        self.assertRaises(TypeError, setattr, registry['/cam'], '__setitem__', 'heu', 'lotte')
 
 
 if __name__ == '__main__':

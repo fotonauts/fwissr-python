@@ -37,8 +37,7 @@ class TestFwissr(unittest.TestCase):
             self.assertEqual(source.path, tmp_conf_file('test.json'))
 
         def test_raises_if_not_exists(self):
-            with self.assertRaises(Exception):
-                File(tmp_conf_file('pouet.json'))
+            self.assertRaises(Exception, File, tmp_conf_file('pouet.json'))
 
         def test_fetches_json_conf(self):
             # create conf file
