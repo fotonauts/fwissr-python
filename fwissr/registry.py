@@ -103,14 +103,13 @@ class Registry:
         with self.semaphore:
             self.sources.append(source)
 
-        if self._frozen:
+        if self.frozen:
             self.reload()
         else:
             with self.semaphore:
                 merge_conf(self._registry, source.get_conf())
 
         self.ensure_refresh_thread()
-        self.ensure_frozen()
 
     def reload(self):
         self.reset()
@@ -145,9 +144,9 @@ class Registry:
             key_ary.pop(0)
 
         if key_ary[-1] == "":
-            key_ary.pop(len(key_ary)-1)
+            key_ary.pop(len(key_ary) - 1)
 
-        cur_hash = self._registry
+        cur_hash = self.registry
         for key_component in key_ary:
             if key_component in cur_hash:
                 cur_hash = cur_hash[key_component]
@@ -161,7 +160,7 @@ class Registry:
 
     def keys(self):
         result = []
-        self._keys(result, [], self._registry)
+        self._keys(result, [], self.registry)
         return sorted(result)
 
     def dump(self):
@@ -183,15 +182,15 @@ class Registry:
             self.refresh_thread.start()
 
     def ensure_frozen(self):
-        if not self._frozen:
+        if self.frozen is False:
             with self.semaphore:
                 self._registry = self.deep_freeze(self._registry)
-                self._frozen = True
+                self.frozen = True
 
     def reset(self):
         with self.semaphore:
             self._registry = {}
-            self._frozen = False
+            self.frozen = False
             [source.reset() for source in self.sources]
 
     def load(self):
@@ -208,6 +207,7 @@ class Registry:
 
         def fget(self):
             self.ensure_refresh_thread
+            self.ensure_frozen()
             return self._registry
         return locals()
     registry = property(**registry())
