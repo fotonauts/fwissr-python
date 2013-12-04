@@ -190,7 +190,7 @@ class TestFwissr(unittest.TestCase):
             'pouet': 'meuh',
         }
         create_tmp_conf_file('test.json', test_conf_modified)
-        time.sleep(3)
+        time.sleep(4)
 
         self.assertEqual(registry.dump(), {'test': test_conf_modified})
 
@@ -253,7 +253,9 @@ class TestFwissr(unittest.TestCase):
 
         self.assertEqual(registry['/foo'], 'bar')
         self.assertTrue(registry.frozen)
-        self.assertRaises(TypeError, setattr, registry['/cam'], '__setitem__', 'heu', 'lotte')
+        self.assertRaises(
+            TypeError, setattr, registry['/cam'],
+            '__setitem__', 'heu', 'lotte')
 
 
 if __name__ == '__main__':
