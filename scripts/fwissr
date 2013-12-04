@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from fwissr.fwissr import Fwissr
+from fwissr.registry import ReadOnlyList, ReadOnlyDict
 from fwissr.version import VERSION
 
 import argparse
@@ -23,13 +24,23 @@ class MyArgParser(argparse.ArgumentParser):
         self.exit(2, '%s: error: %s\n' % (self.prog, message))
 
 
+class ReadOnlyObjectEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, ReadOnlyList):
+            return obj.data
+        if isinstance(obj, ReadOnlyDict):
+            return obj.data
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
+
+
 desc = "The configuration registry."
 usage = '%(prog)s [-h] [-i] [-j] [--dump] [-p] [--version] key\n'
 
 try:
     usage = usage + """
 With key:
-        """+"\n        ".join(Fwissr.global_registry().keys())
+        """ + "\n        ".join(Fwissr.global_registry().keys())
 except Exception as e:
     usage = usage + "\nUnable to load configuration:\n%s" % e
 
@@ -85,10 +96,11 @@ if args.json:
     if args.pretty:
         print json.dumps(
             result,
+            cls=ReadOnlyObjectEncoder,
             sort_keys=True,
             indent=4, separators=(',', ': '))
     else:
-        print json.dumps(result, sort_keys=True)
+        print json.dumps(result, sort_keys=True, cls=ReadOnlyObjectEncoder)
 elif args.inspect:
     if args.pretty:
         pprint.pprint(result)
