@@ -15,7 +15,7 @@ fwissr
 fwissr-python is a registry configuration tool, compatible with fwissr, its ruby counterpart. Made by fotonauts.
 
 * Free software: MIT license
-* Documentation: http://fwissr-python.rtfd.org.
+* Documentation: http://fwissr.rtfd.org.
 
 Install
 =======
