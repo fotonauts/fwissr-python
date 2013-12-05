@@ -190,7 +190,7 @@ class TestFwissr(unittest.TestCase):
             'pouet': 'meuh',
         }
         create_tmp_conf_file('test.json', test_conf_modified)
-        time.sleep(4)
+        time.sleep(12)
 
         self.assertEqual(registry.dump(), {'test': test_conf_modified})
 
@@ -202,7 +202,7 @@ class TestFwissr(unittest.TestCase):
         }
         create_tmp_conf_file('test.json', test_conf_modified_2)
 
-        time.sleep(3)
+        time.sleep(12)
 
         # refresh done
         self.assertEqual(registry.dump(), {'test': test_conf_modified_2})
