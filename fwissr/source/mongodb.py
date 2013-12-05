@@ -21,7 +21,13 @@ class Mongodb(AbstractSource):
                 settings)
 
         cx_uri = urlparse.urlsplit(settings["mongodb"])
-        db_name = cx_uri.path[1:]
+        db_name = cx_uri.path
+
+        if '?' in db_name:
+            db_name, query = db_name.split('?', 1)
+
+        db_name = db_name[1:]
+
         if db_name == "":
             raise Exception(
                 "Erroneous mongodb settings, "
